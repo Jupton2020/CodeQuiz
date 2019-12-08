@@ -1,99 +1,171 @@
-var question = document.getElementById("question");
-var choices =Array.from (document.getElementsByClassName("choice-text"));
+// Main content 
+var questionsEl = document.querySelector(".questions-choices");
+var finalScoreEl= document.querySelector(".finalScore");
 var currentQuestion={};
-var score= 0;
-var questionCounter= 0;
-var availableQuestions= [];
-var timerEl = document.querySelector(".timer")
+var scoreEl= document.querySelector(".highScore");
+
+// timer variables
 var secondsLeft= 75;
+var timerInterval;
+var timerEl = document.querySelector(".timer");
 
-let questions =[    
-    {   
-        question:"Commonly used data types DO NOT include:",
-        choice1:"strings",
-        choice2:"booleans",
-        choice3:"alerts",
-        choice4:"numbers",
-        answer: 3
-    },
-    {   
-       question:"The condition in an if/else statement is enclosed within _____.",
-        choice1:"quotes",
-        choice2:"curly brackets",
-        choice3:"parentheses",
-        choice4:"square brackets",
-        answer:3
-    },
-    {   question:"Arrays in JavaScript can be used to store______.",
-         choice1:"numbers and strings",
-         choice2:"other arrays",
-         choice3:"boolens",
-         choice4:"all of the above",
-        answer:4
-    },
-    {   
-        question:"String values must be enclosed within_____when being assigned to variables.",
-        choice1:"commas",
-        choice2:"curly backets",
-        choice3:"quotes",
-        choice4:"parentheses",
-        answer:3
-    }
-    
-     ];
+// Buttons 
+var submitBtn= document.querySelector("#submit");
+var returnBtn= document.querySelector("#goBack");
 
-const CORRECT_BONUS = 1;
-const MAX_QUESTIONS =5;
+// User Input
+var initialEl = document.querySelector("#initials");
+var scoreForm = document.querySelector("#scoreForm");
+var listScores = document.querySelector("#listScores");
+var userInitials = [];
 
-function startQuiz() {
-    questionCounter= 0;
-    score= 0;
-    availableQuestions= [...questions];
-console.log(availableQuestions);
-getNewQuestion();
-};
+// hide content
+document.querySelector(".finalScore").style.display="none";
+document.querySelector(".highPage").style.display="none";
 
-function getNewQuestion (){ 
-    questionCounter++;
-       const questionIndex = Math.floor(Math.random() * availableQuestions.length);
-       currentQuestion =availableQuestions[questionIndex];
-       question.innerText= currentQuestion.question;
-       
-       choices.forEach(choice => {
-           const number = choice.dataset["number"];
-           choice.innerText = currentQuestion ["choice" + number];
-           
-       });
-       availableQuestions.splice(questionIndex,1);
-       acceptingAnswers= true;
-   };
-choices.forEach(choice => {
-    choice.addEventListener('click', e =>  {
-       if(!acceptingAnswers) return;
-
-       acceptingAnswers = false;
-       const selectedChoice = e.target;
-       const selectedAnswer = selectedChoice.dataset["number"];
-       getNewQuestion();
-   
+//return button event listener click
+returnBtn.addEventListener("click", function () {
+    location.reload()
 });
-    
-});
-    
-   startQuiz();
 
+// timer function when 0
 function setTime() {
-      var timerInterval = setInterval(function(startQuiz) {
-        secondsLeft--;
-        timerEl.textContent ="Time:" + secondsLeft ;
-    
-        if(secondsLeft === 0) {
-          clearInterval(timerInterval);
-          sendMessage();
-        }
-    
-      }, 1000);
-    }function sendMessage() {
-      timerEl.textContent = "Time is Up! ";
-    }
+    timerInterval = setInterval(function () {
+        secondsLeft--;
+        timerEl.textContent = "Time Left: " + secondsLeft;
+        if (secondsLeft === 0) {
+            clearInterval(timerInterval);
+            document.querySelector(".finalScore").style.display = "block";
+            document.querySelector(".timer").style.display = "none";
+            document.querySelector(".questions-choices").style.display = "none";
+            scoreEl.textContent = "Total score = " + secondsLeft;
+        }
+    }, 1000);
+}
+
+// start button event listener
+const startBtn = document.querySelector("#startBtn");
+
+startBtn.addEventListener("click",function () {
     setTime();
+    startBtn.style.display="none";
+    document.querySelector(".homePage").style.display="none";
+    enterQuestions(questionIndex);
+} )
+
+var questionIndex = 0;
+// enter questions and choices
+function enterQuestions(){  
+
+    questionsEl.textContent = "";
+    var question = questions[questionIndex];
+    var questionDiv = document.createElement("div");
+    var questionText = document.createElement("h2");
+    questionText.textContent = question.title;
+    questionDiv.appendChild(questionText)
+
+
+    for(var i=0; i < question.Choices.length ;i++) {  
+        var option = document.createElement("button");
+        option.textContent= question.Choices[i];
+        option.setAttribute("class","option");
+        option.addEventListener("click",function(e) {
+            var optionChosen = (e.target.innerHTML);
+// alert user to answer choice
+            if(optionChosen === questions[questionIndex].answer){  
+
+                alert("correct!");
+                enterQuestions(questionIndex++);
+            }
+            else{   
+                alert("Wrong!");
+                enterQuestions(questionIndex++);
+                secondsLeft -=15;
+            }
+                
+            
+        });
+
+        if (questionIndex == questions.length - 1){ 
+            clearInterval(timerInterval);
+            document.querySelector(".finalScore").style.display="block";
+            document.querySelector(".timer").style.display="none";
+            scoreEl.textContent= "Total score = " + secondsLeft;
+            return;
+        }
+        questionDiv.appendChild(option);
+
+    }
+    questionsEl.appendChild(questionDiv);
+
+}
+// Show the score, allow to clear
+function showScores(){  
+  listScores.innerHTML = "";
+
+for (var j = 0; j < userInitials.length; j ++){ 
+    var characters = userInitials[j];
+
+    var list = document.createElement("li");
+    list.textContent = characters;
+    list.setAttribute("data-index", j);
+
+    var clearBtn= document.createElement("Button");
+    clearBtn.textContent= "Clear";
+
+
+    list.appendChild(clearBtn);
+    listScores.appendChild(list);
+}
+
+
+}
+// storage of user information
+ function initials() {
+     var userScores = JSON.parse(localStorage.getItem("userInitials"));
+
+     if (userScores !==null) {
+         userInitials = userScores;
+     }
+     const submitButton = document.querySelector("#submit");
+
+     submitButton.addEventListener("click", function () {
+         event.preventDefault();
+         
+         var initialChar =initialEl.value.trim();
+        
+         if (initialChar === "") {
+             return;
+         }
+         userInitials.push(initialChar + " " + secondsLeft);
+        //  console.log(userInitials);
+         initialEl.value= "";
+         
+         document.querySelector(".finalScore").style.display="none";
+         document.querySelector(".highPage").style.display="block";
+         
+         
+         scoreStorage();
+         showScores();
+
+        });
+ }
+// storage of user information
+
+function scoreStorage() {
+    localStorage.setItem("userInitials", JSON.stringify(userInitials));
+}
+
+listScores.addEventListener("click",function (event) {
+    var element = event.target;
+
+    if (element.matches("button")=== true) {
+        var index = element.parentElement.getAttribute("data-index");
+        userInitials.splice(index, 1);
+
+        scoreStorage();
+        showScores();
+        
+    }
+});
+ initials();

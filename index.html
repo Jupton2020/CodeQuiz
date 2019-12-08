@@ -6,24 +6,37 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Quiz</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
     <div class="header">   
-     <a class="highscore" href="../quiz/viewscore.html">View Highscores</a>
-     <h3 class="timer">Time:</h3>
+     <a class="highScoreLink" href="#">View Highscores</a>
+     <h3 class="timer"></h3>
     </div>
     <div class="container"> 
-        <div id="home" class="flex-center flex-column"> 
-
+        <div class="homePage" > 
             <h1>Coding Quiz Challenge</h1>
             <p>Try to answer the following code-related questions within the time limit. Keep in mind that incorrect answers will penalize your score time by ten seconds.</p>
             <br>
             <br>
-     <a class="btn" href="./quiz.html">Start Quiz</a>
-            
         </div>
+        <div class="finalScore">    
+            <h1>Congrats, well done</h1>
+            <p class="highScore"></p>
+            Your Initials:<input type="text" name="Your Initials" id="initials">
+            <button id="submit">Submit</button>
+        </div>
+        <div class="highPage">
+            <form id="scoreForm" method="POST">
+                <h1>High Score History</h1>
+                <ul id="listScores"></ul>
+            </form>
+            <button id="goBack">Go Back</button>
+        </div>
+            <button id="startBtn">Start</button>
+            <main class="questions-choices"></main>          
     </div>
-    <script src="../CodeQuiz/questions.js"></script>
+    <script src="..//CodeQuiz/questions.js"></script>
     <script src="../CodeQuiz/script.js"></script>
 </body>
 </html>
