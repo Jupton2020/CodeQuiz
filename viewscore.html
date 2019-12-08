@@ -4,9 +4,109 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Quiz</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
+        <nav class="navbar navbar-light " style ="background-color: red">
+                <a class="navbar-brand" href="#">View Highscore</a>
+                <h3 class="timer"></h3>
+        </nav>  
+     
+    </div>
+    <div class="container"> 
+  
+        <div class="highPage">
+            <form id="scoreForm" method="POST">
+                <h1>High Score History</h1>
+                <ul id="listScores"></ul>
+            </form>
+            <button id="goBack" onclick = "history.go(-1);" >Go Back</button>
+        </div>
+           
+            <main class="questions-choices"></main>          
+    </div>
+    <script>
+        var finalScoreEl= document.querySelector(".finalScore");
+        var scoreEl= document.querySelector(".highScore");
+        var returnBtn= document.querySelector("#goBack");
+        var initialEl = document.querySelector("#initials");
+        var scoreForm = document.querySelector("#scoreForm");
+        var listScores = document.querySelector("#listScores");
+        var userInitials = [];
+
+        function showScores(){  
+  listScores.innerHTML = "";
+
+for (var j = 0; j < userInitials.length; j ++){ 
+    var characters = userInitials[j];
+
+    var list = document.createElement("li");
+    list.textContent = characters;
+    list.setAttribute("data-index", j);
+
+    var clearBtn= document.createElement("Button");
+    clearBtn.textContent= "Clear";
+
+
+    list.appendChild(clearBtn);
+    listScores.appendChild(list);
+}
+
+
+}
+// storage of user information
+ function initials() {
+     var userScores = JSON.parse(localStorage.getItem("userInitials"));
+
+     if (userScores !==null) {
+         userInitials = userScores;
+     }
+     const submitButton = document.querySelector("#submit");
+
+     submitButton.addEventListener("click", function () {
+         event.preventDefault();
+         
+         var initialChar =initialEl.value.trim();
+        
+         if (initialChar === "") {
+             return;
+         }
+         userInitials.push(initialChar + " " + secondsLeft);
+        //  console.log(userInitials);
+         initialEl.value= "";
+         
+         document.querySelector(".finalScore").style.display="none";
+         document.querySelector(".highPage").style.display="block";
+         
+         
+         scoreStorage();
+         showScores();
+
+        });
+ }
+// storage of user information
+
+function scoreStorage() {
+    localStorage.setItem("userInitials", JSON.stringify(userInitials));
+}
+
+listScores.addEventListener("click",function (event) {
+    var element = event.target;
+
+    if (element.matches("button")=== true) {
+        var index = element.parentElement.getAttribute("data-index");
+        userInitials.splice(index, 1);
+
+        scoreStorage();
+        showScores();
+        
+    }
+});
+ initials();
+    </script>
     
+   
 </body>
 </html>
